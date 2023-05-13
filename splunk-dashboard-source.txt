@@ -1,0 +1,319 @@
+<form version="1.1" theme="dark" script="dashboard_scripts.js">
+  <label>CISO Dashboard</label>
+  <fieldset submitButton="false">
+    <input type="dropdown" token="selected_app">
+      <label>Application</label>
+      <fieldForLabel>Application</fieldForLabel>
+      <fieldForValue>Application</fieldForValue>
+      <search>
+        <query>source="HW5FortifyOC.csv" sourcetype="csv" | fields Application | dedup Application | sort Application</query>
+        <earliest>0</earliest>
+        <latest></latest>
+      </search>
+      <choice value="*">ALL</choice>
+      <default>*</default>
+    </input>
+    <input type="dropdown" token="selected_severity">
+      <label>Severity</label>
+      <choice value="*">ALL</choice>
+      <default>*</default>
+      <fieldForLabel>Severity</fieldForLabel>
+      <fieldForValue>Severity</fieldForValue>
+      <search>
+        <query>source="HW5FortifyOC.csv" sourcetype="csv" | fields Severity | dedup Severity | sort Severity</query>
+        <earliest>0</earliest>
+        <latest></latest>
+      </search>
+    </input>
+    <input type="dropdown" token="selected_suppressed" searchWhenChanged="true">
+      <label>Suppressed</label>
+      <choice value="*">ALL</choice>
+      <default>*</default>
+      <fieldForLabel>Is Suppressed</fieldForLabel>
+      <fieldForValue>Is Suppressed</fieldForValue>
+      <search>
+        <query>source="HW5FortifyOC.csv" sourcetype="csv"
+| fields "Is Suppressed"
+| dedup "Is Suppressed"
+| sort "Is Suppressed"</query>
+        <earliest>0</earliest>
+        <latest></latest>
+      </search>
+    </input>
+    <input type="dropdown" token="selected_closed">
+      <label>Closed Status</label>
+      <choice value="*">ALL</choice>
+      <default>*</default>
+      <fieldForLabel>SIM_Closed_Status</fieldForLabel>
+      <fieldForValue>SIM_Closed_Status</fieldForValue>
+      <search>
+        <query>source="HW5FortifyOC.csv" sourcetype="csv"
+| fields "SIM_Closed_Status"
+| dedup "SIM_Closed_Status"
+| sort -"SIM_Closed_Status"</query>
+        <earliest>0</earliest>
+        <latest></latest>
+      </search>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <title>Vulnerability Counts by Severity</title>
+      <chart>
+        <search>
+          <query>source="HW5FortifyOC.csv" sourcetype="csv" Application="$selected_app$" Severity="$selected_severity$" "Is Suppressed"="$selected_suppressed$" SIM_Closed_Status="$selected_closed$"
+| stats count by Severity
+| eval Order = case(Severity=="Critical",1, Severity=="High",2, Severity=="Medium",3, Severity=="Low",4, Severity=="Info",5, Severity=="Best Practice",6)
+| sort Order
+| fields - Order</query>
+          <earliest>0</earliest>
+          <latest></latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.text">Count</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.abbreviation">none</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.abbreviation">none</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.abbreviation">none</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">bar</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.showDataLabels">all</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.fieldColors">{"Critical":"red","High":"red","Medium":"yellow"}</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.mode">seriesCompare</option>
+        <option name="charting.legend.placement">none</option>
+        <option name="charting.lineWidth">2</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+        <option name="trellis.splitBy">range</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>Vulnerability Counts Overall</title>
+      <chart>
+        <search>
+          <query>source="HW5FortifyOC.csv" sourcetype="csv" Application="$selected_app$" Severity="$selected_severity$" "Is Suppressed"="$selected_suppressed$" SIM_Closed_Status="$selected_closed$" | stats count by Severity</query>
+          <earliest>0</earliest>
+          <latest></latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.abbreviation">none</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.abbreviation">none</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.abbreviation">none</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">pie</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.showDataLabels">all</option>
+        <option name="charting.chart.showPercent">1</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.mode">standard</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="charting.lineWidth">2</option>
+        <option name="height">291</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+        <option name="trellis.splitBy">_aggregation</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>Open / Closed Trends</title>
+      <chart id="dynamic_chart">
+        <search>
+          <query/>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">-90</option>
+        <option name="charting.axisTitleX.text">Date</option>
+        <option name="charting.axisTitleY.text">Count</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.showDataLabels">all</option>
+        <option name="charting.drilldown">none</option>
+        <option name="height">329</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>FISMA Counts</title>
+      <single>
+        <search>
+          <query>source="HW5FortifyOC.csv" sourcetype="csv" Application="$selected_app$" Severity="$selected_severity$" "Is Suppressed"="$selected_suppressed$" SIM_Closed_Status="$selected_closed$" NOT FISMA="(Not Set)"
+| stats count by FISMA
+| stats sum(count) as totalcount</query>
+          <earliest>0</earliest>
+          <latest></latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="colorBy">value</option>
+        <option name="colorMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="height">384</option>
+        <option name="numberPrecision">0</option>
+        <option name="rangeColors">["0x53a051","0x0877a6","0xf8be34","0xf1813f","0xdc4e41"]</option>
+        <option name="rangeValues">[0,30,70,100]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="showSparkline">1</option>
+        <option name="showTrendIndicator">1</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+        <option name="trendColorInterpretation">standard</option>
+        <option name="trendDisplayMode">absolute</option>
+        <option name="unitPosition">after</option>
+        <option name="useColors">1</option>
+        <option name="useThousandSeparators">1</option>
+      </single>
+    </panel>
+    <panel>
+      <title>Category Counts</title>
+      <single>
+        <search>
+          <query>source="HW5FortifyOC.csv" sourcetype="csv" Application="$selected_app$" Severity="$selected_severity$" "Is Suppressed"="$selected_suppressed$" SIM_Closed_Status="$selected_closed$" 
+| stats count by Category 
+| stats sum(count) as totalcount</query>
+          <earliest>0</earliest>
+          <latest></latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="colorBy">value</option>
+        <option name="colorMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="height">384</option>
+        <option name="numberPrecision">0</option>
+        <option name="rangeColors">["0x53a051","0x0877a6","0xf8be34","0xf1813f","0xdc4e41"]</option>
+        <option name="rangeValues">[0,30,70,100]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="showSparkline">1</option>
+        <option name="showTrendIndicator">1</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+        <option name="trendColorInterpretation">standard</option>
+        <option name="trendDisplayMode">absolute</option>
+        <option name="unitPosition">after</option>
+        <option name="useColors">1</option>
+        <option name="useThousandSeparators">1</option>
+      </single>
+    </panel>
+    <panel>
+      <title>Category Counts Details</title>
+      <table>
+        <search>
+          <query>source="HW5FortifyOC.csv" sourcetype="csv" Application="$selected_app$" Severity="$selected_severity$" "Is Suppressed"="$selected_suppressed$" SIM_Closed_Status="$selected_closed$" 
+| stats count by Category
+| sort -count</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">true</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+    <panel>
+      <title>Open / Closed Trends from Open Date</title>
+      <chart>
+        <search>
+          <query>source="HW5FortifyOC.csv" sourcetype="csv" Application="$selected_app$" Severity="$selected_severity$" "Is Suppressed"="$selected_suppressed$" SIM_Closed_Status="$selected_closed$"
+| eval DateType = if(isnull(SIM_Closed_Date), "Open", "Closed") 
+| eval Date = coalesce(SIM_Open_Date, SIM_Closed_Date) 
+| chart count by Date DateType
+| addtotals row=true col=false fieldname="TOTAL"</query>
+          <earliest>0</earliest>
+          <latest></latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">-45</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.text">Count</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.abbreviation">none</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.abbreviation">none</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.abbreviation">none</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">column</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.overlayFields">TOTAL</option>
+        <option name="charting.chart.showDataLabels">all</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">stacked</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.mode">standard</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="charting.lineWidth">2</option>
+        <option name="height">386</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Vulnerability Details</title>
+      <table>
+        <search>
+          <query>source="HW5FortifyOC.csv" sourcetype="csv" Application="$selected_app$" Severity="$selected_severity$" "Is Suppressed"="$selected_suppressed$" SIM_Closed_Status="$selected_closed$" 
+| table "Vulnerability Details Url", Application, FISMA, Severity, Category, VulnId, SIM_Open_Date, "Is Suppressed", SIM_Closed_Date, SIM_Closed_Status 
+| fields "Application", "Severity", "Is Suppressed", "FISMA",  "SIM_Closed_Status", "SIM_Open_Date", "SIM_Closed_Date", "Category", "Vulnerability Details Url"</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+  </row>
+</form>
